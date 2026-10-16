@@ -15,7 +15,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy all application files into the container
-COPY . .
+COPY . /app
 
 # Create a non-root user and set permissions for security best practices
 RUN useradd -u 1000 theia && chown -R theia:theia /app
