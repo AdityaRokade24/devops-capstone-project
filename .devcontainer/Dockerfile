@@ -4,7 +4,7 @@ FROM python:3.9-slim
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies needed for PostgreSQL and compilation
+# Install system dependencies needed for compilation and PostgreSQL
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     libpq-dev \
@@ -14,10 +14,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the application service code
-COPY service/ ./service/
+# Copy all application files into the container
+COPY . .
 
-# Create a non-root user and set permissions
+# Create a non-root user and set permissions for security best practices
 RUN useradd -u 1000 theia && chown -R theia:theia /app
 USER theia
 
