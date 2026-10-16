@@ -10,6 +10,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -21,7 +36,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
+          python -m pip install --upgrade pip wheel
           pip install -r requirements.txt
 
       - name: Lint with Flake8
@@ -34,5 +49,7 @@ jobs:
           pylint service --max-line-length=127
 
       - name: Run unit tests with nosetests
+        env:
+          DATABASE_URI: postgresql://postgres:password@localhost:5432/postgres
         run: |
-          nosetests
+          nosetests -v --with-spec --spec-color --with-coverage --cover-package=service
